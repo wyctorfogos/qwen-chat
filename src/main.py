@@ -1,19 +1,10 @@
-# Load model directly
-from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+from models.LLM import LLM
 
-model_name = "Qwen/Qwen2.5-0.5B"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
-messages = [
-    {"role": "user", "content": "Who are you?"},
-]
-inputs = tokenizer.apply_chat_template(
-	messages,
-	add_generation_prompt=True,
-	tokenize=True,
-	return_dict=True,
-	return_tensors="pt",
-).to(model.device)
-
-outputs = model.generate(**inputs, max_new_tokens=40)
-print(tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:]))
+if __name__=="__main__":
+	device = "cpu" ## "cuda" if torch.cuda.is_available() else "cpu"
+	new_model = LLM(llm_model_name="Qwen/Qwen2.5-1.5B-Instruct", device=device, max_new_tokens=512)
+    
+	# Conteúdo digitado pelo usuário
+	user_message = "Qual seu nome?"
+	print(f"Resposta do modelo: {new_model.llm_response(user_message)}")
